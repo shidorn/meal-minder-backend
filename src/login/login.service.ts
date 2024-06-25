@@ -34,7 +34,7 @@ export class LoginService {
         console.log(password);
         return result;
       }
-      return null;
+      return false;
     } catch (error) {
       return error.message;
     }
@@ -49,12 +49,18 @@ export class LoginService {
   }
 
   async register(createUserDto: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    createUserDto.password = hashedPassword;
-    const user = await this.prisma.users.create({
-      data: createUserDto,
-    });
-    return user;
+    try {
+      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+      createUserDto.password = hashedPassword;
+      const user = await this.prisma.users.create({
+        data: createUserDto,
+      });
+      console.log(user);
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw 'Email is already registered.';
+    }
   }
 
   async findByEmail(email: string) {

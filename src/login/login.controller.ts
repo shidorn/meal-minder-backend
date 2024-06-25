@@ -2,13 +2,13 @@ import { Post, Body, Controller, UseGuards } from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from './local-auth.guard';
-import { JwtAuthGuard } from './jwt-auth.guard';
+// import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('register')
   create(@Body() createUserDto: CreateUserDto) {
     return this.loginService.register(createUserDto);
@@ -34,6 +34,7 @@ export class LoginController {
   async forgotPassword(
     @Body('email') email: string,
   ): Promise<{ message: string }> {
+    console.log(email);
     const exists = await this.loginService.findByEmail(email);
     if (exists) {
       const resetToken = await this.loginService.generateFourDigitToken();
@@ -54,7 +55,8 @@ export class LoginController {
 
     const savedToken = await this.loginService.getFourDigitToken(email);
     console.log(savedToken);
-    if (savedToken === token) {
+    console.log(token);
+    if (savedToken == token) {
       return { valid: true };
     } else {
       return { valid: false };
