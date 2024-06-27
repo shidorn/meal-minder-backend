@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from './email.service';
+import { Response } from 'express';
 
 @Injectable()
 export class LoginService {
@@ -40,12 +41,20 @@ export class LoginService {
     }
   }
 
-  async login(createUserDto: CreateUserDto) {
+  async login(createUserDto: CreateUserDto, res: Response) {
     const payload = createUserDto;
     console.log(payload);
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    const token = this.jwtService.sign(payload);
+    res.cookie('token', token, {
+      httpOnly: true,
+      // secure:
+      sameSite: 'strict',
+      maxAge: 3600000,
+    });
+
+    return res.status(200).json({
+      access_token: token,
+    });
   }
 
   async register(createUserDto: CreateUserDto) {

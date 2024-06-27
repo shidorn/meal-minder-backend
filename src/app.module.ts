@@ -7,6 +7,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { ConfigModule } from '@nestjs/config';
 import { MyConfigService } from './config/config.service';
 import { EmailService } from './login/email.service';
+import { GroceriesModule } from './groceries/groceries.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EmailService } from './login/email.service';
     PrismaModule,
     LoginModule,
     DashboardModule,
+    GroceriesModule,
   ],
   controllers: [AppController],
   providers: [AppService, MyConfigService, EmailService],

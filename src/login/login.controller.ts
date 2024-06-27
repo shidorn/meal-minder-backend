@@ -1,8 +1,9 @@
-import { Post, Body, Controller, UseGuards } from '@nestjs/common';
+import { Get, Post, Body, Controller, UseGuards, Res } from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from './local-auth.guard';
-// import { JwtAuthGuard } from './jwt-auth.guard';
+import { Response } from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class LoginController {
@@ -16,9 +17,8 @@ export class LoginController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Body() createUserDto: CreateUserDto) {
-    console.log('createUserDto', createUserDto);
-    return this.loginService.login(createUserDto);
+  login(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+    return this.loginService.login(createUserDto, res);
   }
 
   @Post('check-email')
@@ -75,5 +75,17 @@ export class LoginController {
       return { message: 'Password has been reset successfully' };
     }
     return { message: 'Invalid or expired token' };
+  }
+
+  // @Post('logout')
+  // async logout(@Res() res: Response) {
+  //   res.clearCookie('token');
+  //   res.status(200).send('Logged out successfully');
+  // }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('protected')
+  getProtected() {
+    return { message: 'this is protected route' };
   }
 }
