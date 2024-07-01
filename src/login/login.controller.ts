@@ -1,4 +1,12 @@
-import { Get, Post, Body, Controller, UseGuards, Res } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Body,
+  Controller,
+  UseGuards,
+  Res,
+  Request,
+} from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -30,6 +38,7 @@ export class LoginController {
   }
 
   // @UseGuards(JwtAuthGuard)
+
   @Post('forgot-pass')
   async forgotPassword(
     @Body('email') email: string,

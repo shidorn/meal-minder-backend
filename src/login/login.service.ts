@@ -42,6 +42,13 @@ export class LoginService {
   }
 
   async login(createUserDto: CreateUserDto, res: Response) {
+    const user = await this.validateUser(
+      createUserDto.email,
+      createUserDto.password,
+    );
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
     const payload = createUserDto;
     console.log(payload);
     const token = this.jwtService.sign(payload);
@@ -54,6 +61,7 @@ export class LoginService {
 
     return res.status(200).json({
       access_token: token,
+      user,
     });
   }
 
