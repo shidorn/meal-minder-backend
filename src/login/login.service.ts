@@ -41,20 +41,34 @@ export class LoginService {
     }
   }
 
+  generateRefreshToken(user: any) {
+    const payload = { username: user.username, sub: user.userId };
+    return this.jwtService.sign(payload, { expiresIn: '7d' }); // Refresh token expiration time
+  }
+
   async login(createUserDto: CreateUserDto, res: Response) {
     const payload = createUserDto;
     console.log(payload);
     const token = this.jwtService.sign(payload);
-    res.cookie('token', token, {
-      httpOnly: true,
-      // secure:
-      sameSite: 'strict',
-      maxAge: 3600000,
-    });
+    const refreshToken = this.generateRefreshToken(payload);
 
     return res.status(200).json({
       access_token: token,
+      refresh_token: refreshToken,
+      user: payload,
     });
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const decoded = this.jwtService.verify(refreshToken);
+      const payload = { username: decoded.username, sub: decoded.sub };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch (e) {
+      throw new Error('Invalid refresh token');
+    }
   }
 
   async register(createUserDto: CreateUserDto) {
@@ -136,6 +150,28 @@ export class LoginService {
     } catch (error) {
       console.log(error.message);
       return false;
+    }
+  }
+  private isEmail(emailOrId: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(emailOrId);
+  }
+
+  async getUser(emailOrId: string) {
+    console.log(emailOrId);
+    try {
+      if (this.isEmail(emailOrId)) {
+        return await this.prisma.users.findUnique({
+          where: { email: emailOrId },
+        });
+      } else {
+        return await this.prisma.users.findUnique({
+          where: { user_id: parseInt(emailOrId) },
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+      return error.message;
     }
   }
 }

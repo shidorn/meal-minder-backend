@@ -21,6 +21,11 @@ export class LoginController {
     return this.loginService.login(createUserDto, res);
   }
 
+  @Post('refresh-token')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return this.loginService.refreshToken(refreshToken);
+  }
+
   @Post('check-email')
   async checkEmailExists(
     @Body('email') email: string,
@@ -77,11 +82,12 @@ export class LoginController {
     return { message: 'Invalid or expired token' };
   }
 
-  // @Post('logout')
-  // async logout(@Res() res: Response) {
-  //   res.clearCookie('token');
-  //   res.status(200).send('Logged out successfully');
-  // }
+  // @UseGuards(JwtAuthGuard)
+  @Post('getUser')
+  async getUser(@Body() email: { userEmail: string }) {
+    const { userEmail } = email;
+    return this.loginService.getUser(userEmail);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('protected')
