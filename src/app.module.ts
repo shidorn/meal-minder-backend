@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MyConfigService } from './config/config.service';
 import { EmailService } from './login/email.service';
 import { GroceriesModule } from './groceries/groceries.module';
+import { RecipesModule } from './recipes/recipes.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { GroceriesModule } from './groceries/groceries.module';
     LoginModule,
     DashboardModule,
     GroceriesModule,
+    RecipesModule,
   ],
   controllers: [AppController],
   providers: [AppService, MyConfigService, EmailService],

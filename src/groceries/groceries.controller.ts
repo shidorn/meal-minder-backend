@@ -23,8 +23,16 @@ export class GroceriesController {
   //   @UseGuards(JwtAuthGuard)
   @Post('add-item')
   createItem(@Body() createItemDto: CreateItemDto) {
-    console.log(createItemDto);
-    return this.groceryService.createItem(createItemDto);
+    console.log(createItemDto.item_quantity);
+    const data = {
+      item_id: createItemDto.item_id,
+      item_name: createItemDto.item_name,
+      item_quantity: parseInt(createItemDto.item_quantity.toString()),
+      item_category: createItemDto.item_category,
+      user_id: createItemDto.user_id,
+      grocery_id: createItemDto.grocery_id,
+    };
+    return this.groceryService.createItem(data);
   }
 
   @Post('update-item/:id')
@@ -32,6 +40,14 @@ export class GroceriesController {
     console.log(id);
     console.log(updateItemDto);
     return this.groceryService.updateItem(+id, updateItemDto);
+  }
+
+  @Post('update-item-status/:id')
+  updateItemStatus(
+    @Param('id') id: string,
+    @Body('is_purchase') is_purchase: boolean,
+  ) {
+    return this.groceryService.updateItemStatus(+id, is_purchase);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -45,5 +61,19 @@ export class GroceriesController {
   deleteItem(@Body('id') id: string) {
     console.log(id);
     return this.groceryService.deleteItem(parseInt(id));
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  @Get('item-list-purchased')
+  findAllItemPurchased() {
+    return this.groceryService.findAllItemPurchased();
+  }
+
+  //   @UseGuards(JwtAuthGuard)
+  @Get('grocery-list-status/:id')
+  async getGroceryListStatus(@Param('id') id: string): Promise<any> {
+    const status = await this.groceryService.groceryListStatus(+id);
+    console.log(status);
+    return status;
   }
 }

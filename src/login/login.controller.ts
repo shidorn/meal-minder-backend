@@ -3,7 +3,7 @@ import { LoginService } from './login.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from './local-auth.guard';
 import { Response } from 'express';
-import { JwtAuthGuard } from './jwt-auth.guard';
+// import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class LoginController {
@@ -85,11 +85,12 @@ export class LoginController {
   // @UseGuards(JwtAuthGuard)
   @Post('getUser')
   async getUser(@Body() email: { userEmail: string }) {
+    console.log('email :', email);
     const { userEmail } = email;
     return this.loginService.getUser(userEmail);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('protected')
   getProtected() {
     return { message: 'this is protected route' };
