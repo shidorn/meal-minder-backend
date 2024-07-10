@@ -68,5 +68,5 @@ model recipe_ingredients {
   ingredient_name      String  @db.VarChar(50)
   ingredient_quantity  Int     @default(0)
   recipe_id            Int
-  recipe               recipes @relation(fields: [recipe_id], references: [recipe_id])
+  recipe               recipes @relation(fields: [recipe_id], references: [recipe_id], onDelete: Cascade)
 }
