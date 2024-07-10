@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from './email.service';
 import { Response } from 'express';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class LoginService {
@@ -16,9 +17,12 @@ export class LoginService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      createUserDto.created_at = new Date();
+      const data = {
+        ...createUserDto,
+        created_at: new Date(),
+      };
       return await this.prisma.users.create({
-        data: createUserDto,
+        data,
       });
     } catch (error) {
       return error.message;
@@ -43,7 +47,7 @@ export class LoginService {
 
   generateRefreshToken(user: any) {
     const payload = { username: user.username, sub: user.userId };
-    return this.jwtService.sign(payload, { expiresIn: '7d' }); // Refresh token expiration time
+    return this.jwtService.sign(payload, { expiresIn: '7d' });
   }
 
   async login(createUserDto: CreateUserDto, res: Response) {
@@ -51,6 +55,9 @@ export class LoginService {
     console.log(payload);
     const token = this.jwtService.sign(payload);
     const refreshToken = this.generateRefreshToken(payload);
+
+    res.cookie('token', token, { httpOnly: true });
+    res.cookie('userEmail', createUserDto.email, { httpOnly: true });
 
     return res.status(200).json({
       access_token: token,
@@ -74,9 +81,12 @@ export class LoginService {
   async register(createUserDto: CreateUserDto) {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      createUserDto.password = hashedPassword;
+      const data = {
+        ...createUserDto,
+        password: hashedPassword,
+      };
       const user = await this.prisma.users.create({
-        data: createUserDto,
+        data,
       });
       console.log(user);
       return user;
@@ -152,10 +162,6 @@ export class LoginService {
       return false;
     }
   }
-  private isEmail(emailOrId: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(emailOrId);
-  }
 
   async getUser(emailOrId: string) {
     console.log(emailOrId);
@@ -172,6 +178,35 @@ export class LoginService {
     } catch (error) {
       console.log(error.message);
       return error.message;
+    }
+  }
+
+  private isEmail(emailOrId: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(emailOrId);
+  }
+
+  async updateUserProfile(email: string, newDetails: UpdateUserDto) {
+    try {
+      const user = await this.prisma.users.findUnique({
+        where: { email },
+      });
+      if (user) {
+        const updateData: UpdateUserDto = {
+          email: newDetails.email,
+          username: newDetails.username,
+          profileImage: newDetails.profileImage,
+        };
+        return await this.prisma.users.update({
+          where: { email },
+          data: updateData,
+        });
+      } else {
+        throw new Error('User not found');
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error updating user profile');
     }
   }
 }

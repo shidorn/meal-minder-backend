@@ -48,10 +48,25 @@ export class GroceriesService {
     }
   }
 
+  async updateItemStatus(item_id: number, is_purchase: boolean) {
+    console.log(item_id);
+    console.log(is_purchase);
+
+    try {
+      return await this.prisma.groceries_item.update({
+        where: { item_id },
+        data: { is_purchase },
+      });
+    } catch (error) {
+      console.log(error);
+      return error.message;
+    }
+  }
+
   async findAllItem(grocery_id: number) {
     console.log(grocery_id);
     const resp = await this.prisma.groceries_item.findMany({
-      where: { grocery_id: grocery_id },
+      where: { grocery_id },
       include: {
         user: true,
       },
@@ -67,6 +82,23 @@ export class GroceriesService {
       where: { item_id },
     });
     console.log(resp);
+    return resp;
+  }
+
+  async findAllItemPurchased() {
+    const resp = await this.prisma.groceries_item.findMany({
+      where: { is_purchase: true },
+      include: {
+        user: true,
+      },
+    });
+    console.log(resp);
+    return resp;
+    // return await this.prisma.groceries_item.findMany({ where: { grocery_id } });
+  }
+
+  async groceryListStatus(id: number) {
+    const resp = await this.prisma.$queryRaw`CALL grocery_list_status(${id})`;
     return resp;
   }
 }

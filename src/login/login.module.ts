@@ -9,7 +9,6 @@ import { JwtStrategy } from './jwt.strategy';
 import { MyConfigService } from 'src/config/config.service';
 import { ConfigModule } from '../config/config.module';
 import { EmailService } from './email.service';
-
 @Module({
   imports: [
     PrismaModule,
@@ -32,5 +31,6 @@ import { EmailService } from './email.service';
     EmailService,
   ],
   controllers: [LoginController],
+  exports: [LoginService],
 })
 export class LoginModule {}

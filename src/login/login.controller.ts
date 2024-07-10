@@ -1,15 +1,23 @@
-import { Get, Post, Body, Controller, UseGuards, Res } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Put,
+  Body,
+  Controller,
+  UseGuards,
+  Res,
+} from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from './local-auth.guard';
 import { Response } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('auth')
 export class LoginController {
   constructor(private readonly loginService: LoginService) {}
 
-  // @UseGuards(JwtAuthGuard)
   @Post('register')
   create(@Body() createUserDto: CreateUserDto) {
     return this.loginService.register(createUserDto);
@@ -21,6 +29,28 @@ export class LoginController {
     return this.loginService.login(createUserDto, res);
   }
 
+  @Post('getUser')
+  async getUser(@Body() email: { userEmail: string }) {
+    // console.log('email :', email);
+    const { userEmail } = email;
+    return this.loginService.getUser(userEmail);
+  }
+
+  @Put('update-profile')
+  async updateProfile(
+    @Body() updateUserData: UpdateUserDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const updatedUser = await this.loginService.updateUserProfile(
+        updateUserData.email,
+        updateUserData,
+      );
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      return res.status(500).json({ message: 'Failed to update profile' });
+    }
+  }
   @Post('refresh-token')
   async refreshToken(@Body('refreshToken') refreshToken: string) {
     return this.loginService.refreshToken(refreshToken);
@@ -34,8 +64,8 @@ export class LoginController {
     return { exists };
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Post('forgot-pass')
+  @UseGuards(JwtAuthGuard)
   async forgotPassword(
     @Body('email') email: string,
   ): Promise<{ message: string }> {
@@ -45,7 +75,6 @@ export class LoginController {
       const resetToken = await this.loginService.generateFourDigitToken();
       console.log(resetToken);
       await this.loginService.saveFourDigitToken(email, parseInt(resetToken));
-
       return { message: 'Password reset instructions sent to your email' };
     } else {
       return { message: 'Email not found' };
@@ -57,7 +86,6 @@ export class LoginController {
     @Body() tokenData: { email: string; token: number },
   ): Promise<{ valid: boolean }> {
     const { email, token } = tokenData;
-
     const savedToken = await this.loginService.getFourDigitToken(email);
     console.log(savedToken);
     console.log(token);
@@ -82,15 +110,8 @@ export class LoginController {
     return { message: 'Invalid or expired token' };
   }
 
-  // @UseGuards(JwtAuthGuard)
-  @Post('getUser')
-  async getUser(@Body() email: { userEmail: string }) {
-    const { userEmail } = email;
-    return this.loginService.getUser(userEmail);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('protected')
+  @UseGuards(JwtAuthGuard)
   getProtected() {
     return { message: 'this is protected route' };
   }
