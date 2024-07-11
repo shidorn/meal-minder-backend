@@ -68,7 +68,7 @@ export class RecipesController {
       this.configService.get<string>('PHOTO_SERVER') +
       `meal-minder/public/images/${fileName}`;
 
-    console.log(uploadPath);
+    console.log('uploadPath :', uploadPath);
     const fileStream = createWriteStream(uploadPath);
     fileStream.write(file.buffer);
     fileStream.end();

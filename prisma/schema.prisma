@@ -57,7 +57,7 @@ model groceries_item {
   is_purchase   Boolean   @default(false)
   user_id       Int
   grocery_id    Int
-  user          users     @relation(fields: [user_id], references: [user_id])
+  user          users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
   grocery       groceries @relation(fields: [grocery_id], references: [grocery_id])
 }
 

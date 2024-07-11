@@ -5,7 +5,6 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from './email.service';
 import { Response } from 'express';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class LoginService {
@@ -179,11 +178,11 @@ export class LoginService {
     }
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+  async updateUser(id: number, username: string, photo_path: string) {
     try {
       return this.prisma.users.update({
         where: { user_id: id },
-        data: updateUserDto,
+        data: { username: username, photo_path: photo_path },
       });
     } catch (error) {
       return error.message;

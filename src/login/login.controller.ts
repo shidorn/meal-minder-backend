@@ -1,4 +1,12 @@
-import { Get, Post, Body, Controller, UseGuards, Res } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Body,
+  Controller,
+  UseGuards,
+  Res,
+  Put,
+} from '@nestjs/common';
 import { LoginService } from './login.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -96,6 +104,12 @@ export class LoginController {
     return { message: 'this is protected route' };
   }
 
-  // @Post('updateUser')
-  // asyncu
+  @Put('updateUser')
+  updateUser(
+    @Body() body: { user_id: number; username: string; photo_path: string },
+  ) {
+    console.log('body :', body);
+    const { user_id, username, photo_path } = body;
+    return this.loginService.updateUser(user_id, username, photo_path);
+  }
 }
