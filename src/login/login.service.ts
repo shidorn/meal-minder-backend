@@ -48,17 +48,19 @@ export class LoginService {
 
   async login(createUserDto: CreateUserDto, res: Response) {
     const payload = createUserDto;
-    console.log(payload);
+    console.log('wee', payload);
     const token = this.jwtService.sign(payload);
     const refreshToken = this.generateRefreshToken(payload);
+    const response = await this.prisma.users.findUnique({
+      where: { email: payload.email },
+    });
 
     return res.status(200).json({
       access_token: token,
       refresh_token: refreshToken,
-      user: payload,
+      user: response,
     });
   }
-
   async refreshToken(refreshToken: string) {
     try {
       const decoded = this.jwtService.verify(refreshToken);
