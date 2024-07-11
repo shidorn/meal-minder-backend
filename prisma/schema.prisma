@@ -21,12 +21,22 @@ model users {
   email                    String           @unique @db.VarChar(100)
   first_name               String?          @default("") @db.VarChar(50)
   last_name                String?          @default("") @db.VarChar(50)
+  photo_path               String?          @db.VarChar(255)
   reset_pass_token         Int?             @default(0)
   reset_pass_token_expires DateTime?
   date_of_birth            DateTime?
   created_at               DateTime?
   updated_at               DateTime?
   groceries_item           groceries_item[]
+  family                   family[]
+}
+
+model family {
+  family_id   Int    @id @default(autoincrement())
+  family_name String @db.VarChar(50)
+  creator     String @db.VarChar(50)
+  user_id     Int
+  users       users  @relation(fields: [user_id], references: [user_id])
 }
 
 //Groceries Class
@@ -59,6 +69,7 @@ model recipes {
   instruction        String?              @db.VarChar(255)
   photo_path         String?              @db.VarChar(255)
   cooking_time       String?              @db.VarChar(50)
+  is_favorite        Boolean              @default(false)
   date_created       DateTime             @default(now())
   recipe_ingredients recipe_ingredients[]
 }

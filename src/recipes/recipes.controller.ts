@@ -1,4 +1,5 @@
 import {
+  Param,
   Get,
   Post,
   Body,
@@ -79,5 +80,18 @@ export class RecipesController {
   deleteRecipe(@Body('id') id: string) {
     console.log('delete-recipe id : ', id);
     return this.recipeService.delete(parseInt(id));
+  }
+
+  @Post('update-favorite/:id')
+  updateFavorite(
+    @Param('id') id: string,
+    @Body('is_favorite') is_favorite: boolean,
+  ) {
+    return this.recipeService.updateFavorite(+id, is_favorite);
+  }
+
+  @Get('get-favorites')
+  getFavorites() {
+    return this.recipeService.findFavorites();
   }
 }

@@ -51,4 +51,25 @@ export class RecipesService {
   async delete(recipe_id: number) {
     return await this.prisma.recipes.delete({ where: { recipe_id } });
   }
+
+  async updateFavorite(recipe_id: number, is_favorite: boolean) {
+    try {
+      return await this.prisma.recipes.update({
+        where: { recipe_id },
+        data: { is_favorite },
+      });
+    } catch (error) {
+      return error.message;
+    }
+  }
+
+  async findFavorites() {
+    try {
+      return await this.prisma.recipes.findMany({
+        where: { is_favorite: true },
+      });
+    } catch (error) {
+      return error.message;
+    }
+  }
 }

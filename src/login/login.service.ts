@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { EmailService } from './email.service';
 import { Response } from 'express';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class LoginService {
@@ -48,14 +49,17 @@ export class LoginService {
 
   async login(createUserDto: CreateUserDto, res: Response) {
     const payload = createUserDto;
-    console.log(payload);
+    console.log('wee', payload);
     const token = this.jwtService.sign(payload);
     const refreshToken = this.generateRefreshToken(payload);
+    const response = await this.prisma.users.findUnique({
+      where: { email: payload.email },
+    });
 
     return res.status(200).json({
       access_token: token,
       refresh_token: refreshToken,
-      user: payload,
+      user: response,
     });
   }
 
@@ -171,6 +175,17 @@ export class LoginService {
       }
     } catch (error) {
       console.log(error.message);
+      return error.message;
+    }
+  }
+
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    try {
+      return this.prisma.users.update({
+        where: { user_id: id },
+        data: updateUserDto,
+      });
+    } catch (error) {
       return error.message;
     }
   }

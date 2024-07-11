@@ -95,4 +95,7 @@ export class LoginController {
   getProtected() {
     return { message: 'this is protected route' };
   }
+
+  // @Post('updateUser')
+  // asyncu
 }
