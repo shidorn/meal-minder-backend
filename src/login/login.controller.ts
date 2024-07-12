@@ -118,4 +118,9 @@ export class LoginController {
     const { family_name, creator } = body;
     return this.loginService.addFamily(family_name, creator);
   }
+
+  @Get('get-families')
+  getFamilies() {
+    return this.loginService.getFamilies();
+  }
 }

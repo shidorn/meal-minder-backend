@@ -198,4 +198,12 @@ export class LoginService {
       return error.message;
     }
   }
+
+  async getFamilies() {
+    try {
+      return this.prisma.family.findMany();
+    } catch (error) {
+      return error.message;
+    }
+  }
 }
