@@ -188,4 +188,14 @@ export class LoginService {
       return error.message;
     }
   }
+
+  async addFamily(family_name: string, creator: string) {
+    try {
+      return this.prisma.family.create({
+        data: { family_name: family_name, creator: creator },
+      });
+    } catch (error) {
+      return error.message;
+    }
+  }
 }

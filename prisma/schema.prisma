@@ -28,15 +28,15 @@ model users {
   created_at               DateTime?
   updated_at               DateTime?
   groceries_item           groceries_item[]
-  family                   family[]
+  family_id                Int?
+  family                   family?          @relation(fields: [family_id], references: [family_id])
 }
 
 model family {
-  family_id   Int    @id @default(autoincrement())
-  family_name String @db.VarChar(50)
-  creator     String @db.VarChar(50)
-  user_id     Int
-  users       users  @relation(fields: [user_id], references: [user_id])
+  family_id   Int     @id @default(autoincrement())
+  family_name String  @db.VarChar(50)
+  creator     String  @db.VarChar(50)
+  users       users[]
 }
 
 //Groceries Class

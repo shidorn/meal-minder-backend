@@ -112,4 +112,10 @@ export class LoginController {
     const { user_id, username, photo_path } = body;
     return this.loginService.updateUser(user_id, username, photo_path);
   }
+
+  @Post('add-family')
+  addFamily(@Body() body: { family_name: string; creator: string }) {
+    const { family_name, creator } = body;
+    return this.loginService.addFamily(family_name, creator);
+  }
 }
